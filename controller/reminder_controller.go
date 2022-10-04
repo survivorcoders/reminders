@@ -4,32 +4,19 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"survivorcoders.com/reminders/entity"
+	"survivorcoders.com/reminders/repository"
 	"time"
 )
 
 type ReminderController struct {
+	ReminderRepository repository.ReminderRepository
 }
 
-func (receiver ReminderController) GetAll(c echo.Context) error {
-
-	var reminderEntities []entity.Reminder
-	reminderEntities = append(reminderEntities, entity.Reminder{
-		Id:          1,
-		Name:        "Call my mom",
-		RemindMeAt:  time.Now(),
-		Description: "it's about my friend",
-	})
-	reminderEntities = append(reminderEntities, entity.Reminder{
-		Id:          2,
-		Name:        "Call my dad",
-		RemindMeAt:  time.Now(),
-		Description: "it's about my mom's friend :P",
-	})
-
-	return c.JSON(http.StatusOK, reminderEntities)
+func (r ReminderController) GetAll(c echo.Context) error {
+	return c.JSON(http.StatusOK, r.ReminderRepository.GetAll())
 }
 
-func (receiver ReminderController) Get(c echo.Context) error {
+func (r ReminderController) Get(c echo.Context) error {
 	reminderEntity := &entity.Reminder{
 		Id:          1,
 		Name:        "Call my mom1",
@@ -39,7 +26,7 @@ func (receiver ReminderController) Get(c echo.Context) error {
 	return c.JSON(http.StatusOK, reminderEntity)
 }
 
-func (receiver ReminderController) Create(c echo.Context) error {
+func (r ReminderController) Create(c echo.Context) error {
 	reminderEntity := &entity.Reminder{}
 	if err := c.Bind(reminderEntity); err != nil {
 		return err
@@ -49,7 +36,7 @@ func (receiver ReminderController) Create(c echo.Context) error {
 	return c.JSON(http.StatusCreated, reminderEntity)
 }
 
-func (receiver ReminderController) PUT(c echo.Context) error {
+func (r ReminderController) PUT(c echo.Context) error {
 	reminderEntity := &entity.Reminder{Name: "Call my mom"}
 	//get current reminder from dataBase
 	//if empty return error not found
@@ -62,7 +49,7 @@ func (receiver ReminderController) PUT(c echo.Context) error {
 	return c.JSON(http.StatusOK, reminderEntity)
 }
 
-func (receiver ReminderController) Delete(c echo.Context) error {
+func (r ReminderController) Delete(c echo.Context) error {
 
 	id := c.Param("id")
 	//call repository to validate the existence
