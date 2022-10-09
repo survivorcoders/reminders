@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 	"survivorcoders.com/reminders/entity"
 	"survivorcoders.com/reminders/repository"
 	"time"
@@ -53,10 +54,13 @@ func (r ReminderController) Delete(c echo.Context) error {
 
 	id := c.Param("id")
 	//call repository to validate the existence
-	if id == "2" {
-		return c.JSON(http.StatusNotFound, nil)
+	i, _ := strconv.Atoi(id)
+	exists := r.ReminderRepository.Exists(i)
+	if exists {
+		//call the repository to delete
+		r.ReminderRepository.Delete(i)
+		return c.JSON(http.StatusOK, nil)
 	}
+	return c.JSON(http.StatusNotFound, nil)
 
-	//call the repository to delete
-	return c.JSON(http.StatusOK, nil)
 }
