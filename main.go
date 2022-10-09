@@ -18,7 +18,8 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Connect to the "bank" database
-	dbConnection, err := gorm.Open(postgres.Open("postgres://localhost:5432/reminders"), &gorm.Config{})
+	dsn := "host=localhost user=postgres password=password dbname=reminders port=5432 sslmode=disable TimeZone=Asia/Beirut"
+	dbConnection, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("error configuring the database: ", err)
 	}

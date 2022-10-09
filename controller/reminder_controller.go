@@ -32,7 +32,7 @@ func (r ReminderController) Create(c echo.Context) error {
 		return err
 	}
 	//save into database
-	reminderEntity.Id = 12
+	r.ReminderRepository.Create(&reminderEntity)
 	return c.JSON(http.StatusCreated, reminderEntity)
 }
 

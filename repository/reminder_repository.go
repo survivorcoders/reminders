@@ -14,3 +14,7 @@ func (r ReminderRepository) GetAll() []entity.Reminder {
 	_ = r.DB.Find(&reminders)
 	return reminders
 }
+
+func (r *ReminderRepository) Create(reminder **entity.Reminder) {
+	r.DB.Create(reminder)
+}
