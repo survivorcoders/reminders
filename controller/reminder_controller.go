@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"survivorcoders.com/reminders/entity"
 	"survivorcoders.com/reminders/repository"
-	"time"
 )
 
 type ReminderController struct {
@@ -18,12 +17,8 @@ func (r ReminderController) GetAll(c echo.Context) error {
 }
 
 func (r ReminderController) Get(c echo.Context) error {
-	reminderEntity := &entity.Reminder{
-		Id:          1,
-		Name:        "Call my mom1",
-		RemindMeAt:  time.Now(),
-		Description: "it's about my friend12",
-	}
+	id := c.Param("id")
+	reminderEntity := r.ReminderRepository.Get(id)
 	return c.JSON(http.StatusOK, reminderEntity)
 }
 

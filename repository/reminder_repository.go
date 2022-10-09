@@ -15,6 +15,12 @@ func (r ReminderRepository) GetAll() []entity.Reminder {
 	return reminders
 }
 
+func (r ReminderRepository) Get(id string) entity.Reminder {
+	reminder := entity.Reminder{}
+	_ = r.DB.First(&reminder, id)
+	return reminder
+}
+
 func (r *ReminderRepository) Create(reminder **entity.Reminder) {
 	r.DB.Create(reminder)
 }
@@ -27,7 +33,7 @@ func (r *ReminderRepository) Delete(id int) {
 
 func (r *ReminderRepository) Exists(id int) bool {
 	reminderEntity := &entity.Reminder{}
-	result := r.DB.First(&reminderEntity, id)
+	result := r.DB.First(reminderEntity, id)
 	if result.Error != nil {
 		return false
 	}
