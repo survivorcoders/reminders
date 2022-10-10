@@ -30,6 +30,16 @@ func main() {
 			DB: dbConnection,
 		},
 	}
+	authController := controller.AuthController{
+		UserRepository: repository.UserRepository{
+			DB: dbConnection,
+		},
+	}
+
+	//middleware (we validate JWT)
+	e.POST("/sign-up", authController.SignUp)
+	e.POST("/sign-in", authController.SignIn)
+
 	e.GET("/reminders", reminderController.GetAll)
 	e.POST("/reminders", reminderController.Create)
 	e.GET("/reminders/:id", reminderController.Get)
