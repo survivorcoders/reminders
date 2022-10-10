@@ -19,7 +19,7 @@ func (r AuthController) SignUp(c echo.Context) error {
 	}
 
 	//generate the argon2 from the password sent
-	userEntity.Password = GenerateArgon2(userEntity.Password)
+	//userEntity.Password = GenerateArgon2(userEntity.Password)
 	if r.UserRepository.AddNewUser(userEntity) == nil {
 		return c.JSON(http.StatusBadRequest, "Cannot create user..")
 	}
@@ -38,10 +38,10 @@ func (r AuthController) SignIn(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Cannot login ... ")
 	}
 
-	// validate the password of this email with loginRequest.Password
-	if CompareArgon2(ownerOfEmail.Password, loginRequest.Password) != true {
-		return c.JSON(http.StatusBadRequest, "Cannot login ... ")
-	}
+	//// validate the password of this email with loginRequest.Password
+	//if CompareArgon2(ownerOfEmail.Password, loginRequest.Password) != true {
+	//	return c.JSON(http.StatusBadRequest, "Cannot login ... ")
+	//}
 
 	//generate a JWT token
 	// using external libarary or using the echo library
