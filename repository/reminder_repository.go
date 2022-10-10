@@ -14,3 +14,28 @@ func (r ReminderRepository) GetAll() []entity.Reminder {
 	_ = r.DB.Find(&reminders)
 	return reminders
 }
+
+func (r ReminderRepository) Get(id string) entity.Reminder {
+	reminder := entity.Reminder{}
+	_ = r.DB.First(&reminder, id)
+	return reminder
+}
+
+func (r *ReminderRepository) Create(reminder **entity.Reminder) {
+	r.DB.Create(reminder)
+}
+
+//result := db.First(&user)
+
+func (r *ReminderRepository) Delete(id int) {
+	r.DB.Delete(&entity.Reminder{}, id)
+}
+
+func (r *ReminderRepository) Exists(id int) bool {
+	reminderEntity := &entity.Reminder{}
+	result := r.DB.First(reminderEntity, id)
+	if result.Error != nil {
+		return false
+	}
+	return true
+}

@@ -7,4 +7,6 @@ type Reminder struct {
 	Name        string    `json:"name"`
 	RemindMeAt  time.Time `json:"remindMeAt"`
 	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }

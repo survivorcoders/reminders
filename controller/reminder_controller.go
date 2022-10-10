@@ -3,9 +3,9 @@ package controller
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 	"survivorcoders.com/reminders/entity"
 	"survivorcoders.com/reminders/repository"
-	"time"
 )
 
 type ReminderController struct {
@@ -17,12 +17,8 @@ func (r ReminderController) GetAll(c echo.Context) error {
 }
 
 func (r ReminderController) Get(c echo.Context) error {
-	reminderEntity := &entity.Reminder{
-		Id:          1,
-		Name:        "Call my mom1",
-		RemindMeAt:  time.Now(),
-		Description: "it's about my friend12",
-	}
+	id := c.Param("id")
+	reminderEntity := r.ReminderRepository.Get(id)
 	return c.JSON(http.StatusOK, reminderEntity)
 }
 
@@ -32,7 +28,7 @@ func (r ReminderController) Create(c echo.Context) error {
 		return err
 	}
 	//save into database
-	reminderEntity.Id = 12
+	r.ReminderRepository.Create(&reminderEntity)
 	return c.JSON(http.StatusCreated, reminderEntity)
 }
 
@@ -53,10 +49,13 @@ func (r ReminderController) Delete(c echo.Context) error {
 
 	id := c.Param("id")
 	//call repository to validate the existence
-	if id == "2" {
-		return c.JSON(http.StatusNotFound, nil)
+	i, _ := strconv.Atoi(id)
+	exists := r.ReminderRepository.Exists(i)
+	if exists {
+		//call the repository to delete
+		r.ReminderRepository.Delete(i)
+		return c.JSON(http.StatusOK, nil)
 	}
+	return c.JSON(http.StatusNotFound, nil)
 
-	//call the repository to delete
-	return c.JSON(http.StatusOK, nil)
 }
