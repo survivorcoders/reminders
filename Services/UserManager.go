@@ -3,8 +3,8 @@ package Services
 import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
-	"reminders.com/m/entity"
-	"reminders.com/m/repository"
+	"survivorcoders.com/reminders/entity"
+	"survivorcoders.com/reminders/repository"
 )
 
 type UserManager struct {

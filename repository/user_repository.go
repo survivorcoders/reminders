@@ -2,7 +2,7 @@ package repository
 
 import (
 	"gorm.io/gorm"
-	"reminders.com/m/entity"
+	"survivorcoders.com/reminders/entity"
 )
 
 type UserProviderRepository struct {

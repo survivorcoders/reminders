@@ -5,12 +5,28 @@ import (
 	"survivorcoders.com/reminders/entity"
 )
 
-type ReminderRepository struct {
-	DB *gorm.DB
+type RemindersProviderRepository struct {
+	Database *gorm.DB
 }
 
-func (r ReminderRepository) GetAll() []entity.Reminder {
-	var reminders []entity.Reminder
-	_ = r.DB.Find(&reminders)
-	return reminders
+func (receiver *RemindersProviderRepository) CreateReminder(reminder *entity.Reminder) {
+	receiver.Database.Create(reminder)
+}
+
+func (receiver *RemindersProviderRepository) GetReminder(id int, reminder *entity.Reminder) *entity.Reminder {
+	receiver.Database.First(reminder, id)
+
+	return reminder
+}
+
+func (receiver *RemindersProviderRepository) GetAllReminders(reminders *[]entity.Reminder) {
+	receiver.Database.Find(reminders)
+}
+
+func (receiver *RemindersProviderRepository) UpdateReminder(r entity.Reminder) {
+	receiver.Database.Model(&r).Updates(r)
+}
+
+func (receiver *RemindersProviderRepository) DeleteReminder(id int) {
+	receiver.Database.Delete(&entity.Reminder{}, id)
 }

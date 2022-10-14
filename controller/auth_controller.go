@@ -4,9 +4,9 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"reminders.com/m/Claims"
-	"reminders.com/m/Services"
-	"reminders.com/m/entity"
+	"survivorcoders.com/reminders/Claims"
+	"survivorcoders.com/reminders/Services"
+	"survivorcoders.com/reminders/entity"
 	"time"
 )
 
@@ -65,7 +65,7 @@ func (a *AuthenticationController) SignUp(c echo.Context) error {
 	user := entity.User{Name: name, Username: username, Password: password}
 	// Throws unauthorized error
 	if err := a.UserManager.SignUp(&user); err != nil {
-		return echo.ErrInternalServerError
+		return echo.ErrForbidden
 	}
 
 	return c.JSON(http.StatusOK, user)

@@ -3,60 +3,69 @@ package controller
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 	"survivorcoders.com/reminders/entity"
 	"survivorcoders.com/reminders/repository"
-	"time"
 )
 
 type ReminderController struct {
-	ReminderRepository repository.ReminderRepository
+	ReminderService *repository.RemindersProviderRepository
 }
 
-func (r ReminderController) GetAll(c echo.Context) error {
-	return c.JSON(http.StatusOK, r.ReminderRepository.GetAll())
-}
+func (receiver *ReminderController) PostCreateReminder(c echo.Context) error {
+	reminder := &entity.Reminder{}
 
-func (r ReminderController) Get(c echo.Context) error {
-	reminderEntity := &entity.Reminder{
-		Id:          1,
-		Name:        "Call my mom1",
-		RemindMeAt:  time.Now(),
-		Description: "it's about my friend12",
-	}
-	return c.JSON(http.StatusOK, reminderEntity)
-}
-
-func (r ReminderController) Create(c echo.Context) error {
-	reminderEntity := &entity.Reminder{}
-	if err := c.Bind(reminderEntity); err != nil {
-		return err
-	}
-	//save into database
-	reminderEntity.Id = 12
-	return c.JSON(http.StatusCreated, reminderEntity)
-}
-
-func (r ReminderController) PUT(c echo.Context) error {
-	reminderEntity := &entity.Reminder{Name: "Call my mom"}
-	//get current reminder from dataBase
-	//if empty return error not found
-	if err := c.Bind(reminderEntity); err != nil {
+	if err := c.Bind(reminder); err != nil {
 		return err
 	}
 
-	//call the repo to update the existing reminder
-	//save(entity)
-	return c.JSON(http.StatusOK, reminderEntity)
+	receiver.ReminderService.CreateReminder(reminder)
+	return c.JSON(http.StatusCreated, reminder)
 }
 
-func (r ReminderController) Delete(c echo.Context) error {
+func (receiver *ReminderController) GetReminder(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return err
+	}
+	var reminder entity.Reminder
 
-	id := c.Param("id")
-	//call repository to validate the existence
-	if id == "2" {
-		return c.JSON(http.StatusNotFound, nil)
+	receiver.ReminderService.GetReminder(id, &reminder)
+
+	return c.JSON(http.StatusOK, reminder)
+}
+
+func (receiver *ReminderController) GetAllReminders(c echo.Context) error {
+	var reminders []entity.Reminder
+
+	receiver.ReminderService.GetAllReminders(&reminders)
+
+	return c.JSON(http.StatusOK, reminders)
+}
+
+func (receiver *ReminderController) PutUpdateReminder(c echo.Context) error {
+	r := new(entity.Reminder)
+
+	if err := c.Bind(r); err != nil {
+		return err
 	}
 
-	//call the repository to delete
-	return c.JSON(http.StatusOK, nil)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return err
+	}
+
+	r.Id = id
+	receiver.ReminderService.UpdateReminder(*r)
+
+	return c.JSON(http.StatusOK, r)
+}
+
+func (receiver *ReminderController) DeleteReminder(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return err
+	}
+	receiver.ReminderService.DeleteReminder(id)
+	return c.NoContent(http.StatusNoContent)
 }
