@@ -11,7 +11,6 @@ type UserRepository struct {
 
 func (r UserRepository) AddNewUser(user *entity.User) *entity.User {
 
-	//encrypt the password
 	if dbc := r.DB.Save(&user); dbc.Error != nil {
 		// Create failed, do something e.g. return, panic etc.
 		return nil
