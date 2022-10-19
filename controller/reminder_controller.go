@@ -3,9 +3,9 @@ package controller
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 	"survivorcoders.com/reminders/entity"
 	"survivorcoders.com/reminders/repository"
-	"time"
 )
 
 type ReminderController struct {
@@ -17,13 +17,8 @@ func (r ReminderController) GetAll(c echo.Context) error {
 }
 
 func (r ReminderController) Get(c echo.Context) error {
-	reminderEntity := &entity.Reminder{
-		Id:          1,
-		Name:        "Call my mom1",
-		RemindMeAt:  time.Now(),
-		Description: "it's about my friend12",
-	}
-	return c.JSON(http.StatusOK, reminderEntity)
+	id, _ := strconv.Atoi(c.Param("id"))
+	return c.JSON(http.StatusOK, r.ReminderRepository.Get(id))
 }
 
 func (r ReminderController) Create(c echo.Context) error {
@@ -31,32 +26,25 @@ func (r ReminderController) Create(c echo.Context) error {
 	if err := c.Bind(reminderEntity); err != nil {
 		return err
 	}
-	//save into database
-	reminderEntity.Id = 12
-	return c.JSON(http.StatusCreated, reminderEntity)
+	return c.JSON(http.StatusCreated, r.ReminderRepository.Create(*reminderEntity))
 }
 
 func (r ReminderController) PUT(c echo.Context) error {
-	reminderEntity := &entity.Reminder{Name: "Call my mom"}
+	reminderEntity := &entity.Reminder{}
 	//get current reminder from dataBase
 	//if empty return error not found
 	if err := c.Bind(reminderEntity); err != nil {
 		return err
 	}
-
 	//call the repo to update the existing reminder
 	//save(entity)
-	return c.JSON(http.StatusOK, reminderEntity)
+	id, _ := strconv.Atoi(c.Param("id"))
+	return c.JSON(http.StatusOK, r.ReminderRepository.PUT(*reminderEntity, id))
 }
 
 func (r ReminderController) Delete(c echo.Context) error {
 
-	id := c.Param("id")
-	//call repository to validate the existence
-	if id == "2" {
-		return c.JSON(http.StatusNotFound, nil)
-	}
-
+	id, _ := strconv.Atoi(c.Param("id"))
 	//call the repository to delete
-	return c.JSON(http.StatusOK, nil)
+	return c.JSON(http.StatusOK, r.ReminderRepository.Delete(id))
 }
