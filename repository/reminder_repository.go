@@ -9,24 +9,26 @@ type RemindersProviderRepository struct {
 	Database *gorm.DB
 }
 
-func (receiver *RemindersProviderRepository) CreateReminder(reminder *entity.Reminder) {
-	receiver.Database.Create(reminder)
+func NewRemindersProviderRepository(database *gorm.DB) *RemindersProviderRepository {
+	return &RemindersProviderRepository{Database: database}
 }
 
-func (receiver *RemindersProviderRepository) GetReminder(id int, reminder *entity.Reminder) *entity.Reminder {
-	receiver.Database.First(reminder, id)
-
-	return reminder
+func (receiver *RemindersProviderRepository) CreateReminder(reminder *entity.Reminder) error {
+	return receiver.Database.Create(reminder).Error
 }
 
-func (receiver *RemindersProviderRepository) GetAllReminders(reminders *[]entity.Reminder) {
-	receiver.Database.Find(reminders)
+func (receiver *RemindersProviderRepository) GetReminder(id int, reminder *entity.Reminder) error {
+	return receiver.Database.First(reminder, id).Error
 }
 
-func (receiver *RemindersProviderRepository) UpdateReminder(r entity.Reminder) {
-	receiver.Database.Model(&r).Updates(r)
+func (receiver *RemindersProviderRepository) GetAllReminders(reminders *[]entity.Reminder) error {
+	return receiver.Database.Find(reminders).Error
 }
 
-func (receiver *RemindersProviderRepository) DeleteReminder(id int) {
-	receiver.Database.Delete(&entity.Reminder{}, id)
+func (receiver *RemindersProviderRepository) UpdateReminder(r entity.Reminder) error {
+	return receiver.Database.Model(&r).Updates(r).Error
+}
+
+func (receiver *RemindersProviderRepository) DeleteReminder(id int) error {
+	return receiver.Database.Delete(&entity.Reminder{}, id).Error
 }

@@ -11,6 +11,10 @@ type UserManager struct {
 	UserRepository *repository.UserProviderRepository
 }
 
+func NewUserManager(userRepository *repository.UserProviderRepository) *UserManager {
+	return &UserManager{UserRepository: userRepository}
+}
+
 func (u *UserManager) hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
@@ -50,6 +54,6 @@ func (u *UserManager) SignUp(user *entity.User) error {
 	if err != nil {
 		return err
 	}
-	//userCreated
+	//user Created
 	return nil
 }

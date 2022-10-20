@@ -14,6 +14,10 @@ type AuthenticationController struct {
 	UserManager *Services.UserManager
 }
 
+func NewAuthenticationController(userManager *Services.UserManager) *AuthenticationController {
+	return &AuthenticationController{UserManager: userManager}
+}
+
 func (a *AuthenticationController) SignIn(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")

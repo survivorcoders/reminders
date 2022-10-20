@@ -31,11 +31,11 @@ func main() {
 		return
 	}
 
-	reminderRepository := repository.RemindersProviderRepository{Database: database}
-	authRepository := repository.UserProviderRepository{Database: database}
-	userManager := Services.UserManager{UserRepository: &authRepository}
-	reminderController := controller.ReminderController{ReminderService: &reminderRepository}
-	authController := controller.AuthenticationController{UserManager: &userManager}
+	reminderRepository := repository.NewRemindersProviderRepository(database)
+	authRepository := repository.NewUserProviderRepository(database)
+	userManager := Services.NewUserManager(authRepository)
+	reminderController := controller.NewReminderController(reminderRepository)
+	authController := controller.NewAuthenticationController(userManager)
 
 	//authentication routes
 	e.POST("/sign-in", authController.SignIn)

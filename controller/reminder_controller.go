@@ -12,14 +12,23 @@ type ReminderController struct {
 	ReminderService *repository.RemindersProviderRepository
 }
 
+func NewReminderController(reminderService *repository.RemindersProviderRepository) *ReminderController {
+	return &ReminderController{ReminderService: reminderService}
+}
+
 func (receiver *ReminderController) PostCreateReminder(c echo.Context) error {
 	reminder := &entity.Reminder{}
 
-	if err := c.Bind(reminder); err != nil {
+	err := c.Bind(reminder);
+	if err != nil {
 		return err
 	}
 
-	receiver.ReminderService.CreateReminder(reminder)
+	err = receiver.ReminderService.CreateReminder(reminder)
+	if err != nil {
+		return err
+	}
+
 	return c.JSON(http.StatusCreated, reminder)
 }
 
@@ -30,7 +39,10 @@ func (receiver *ReminderController) GetReminder(c echo.Context) error {
 	}
 	var reminder entity.Reminder
 
-	receiver.ReminderService.GetReminder(id, &reminder)
+	err = receiver.ReminderService.GetReminder(id, &reminder)
+	if err != nil {
+		return err
+	}
 
 	return c.JSON(http.StatusOK, reminder)
 }
@@ -38,7 +50,10 @@ func (receiver *ReminderController) GetReminder(c echo.Context) error {
 func (receiver *ReminderController) GetAllReminders(c echo.Context) error {
 	var reminders []entity.Reminder
 
-	receiver.ReminderService.GetAllReminders(&reminders)
+	err := receiver.ReminderService.GetAllReminders(&reminders)
+	if err != nil {
+		return err
+	}
 
 	return c.JSON(http.StatusOK, reminders)
 }
@@ -56,7 +71,10 @@ func (receiver *ReminderController) PutUpdateReminder(c echo.Context) error {
 	}
 
 	r.Id = id
-	receiver.ReminderService.UpdateReminder(*r)
+	err = receiver.ReminderService.UpdateReminder(*r)
+	if err != nil {
+		return err
+	}
 
 	return c.JSON(http.StatusOK, r)
 }
@@ -66,6 +84,10 @@ func (receiver *ReminderController) DeleteReminder(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	receiver.ReminderService.DeleteReminder(id)
+
+	err = receiver.ReminderService.DeleteReminder(id)
+	if err != nil {
+		return err
+	}
 	return c.NoContent(http.StatusNoContent)
 }
