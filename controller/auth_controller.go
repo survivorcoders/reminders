@@ -23,13 +23,14 @@ func (a *AuthenticationController) SignIn(c echo.Context) error {
 	password := c.FormValue("password")
 
 	// Throws unauthorized error
-	if err := a.UserManager.SignIn(username, password); err != nil {
+	user, err := a.UserManager.SignIn(username, password)
+	if err != nil {
 		return echo.ErrUnauthorized
 	}
 
 	// Set custom claims
 	claims := &Claims.JwtCustomClaims{
-		Name:  "Jon Snow",
+		Name:  user.Name,
 		Admin: true,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
@@ -46,6 +47,7 @@ func (a *AuthenticationController) SignIn(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
+		"user":  user,
 		"token": t,
 	})
 }

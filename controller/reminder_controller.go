@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -19,7 +20,7 @@ func NewReminderController(reminderService *repository.RemindersProviderReposito
 func (receiver *ReminderController) PostCreateReminder(c echo.Context) error {
 	reminder := &entity.Reminder{}
 
-	err := c.Bind(reminder);
+	err := c.Bind(reminder)
 	if err != nil {
 		return err
 	}
@@ -71,9 +72,9 @@ func (receiver *ReminderController) PutUpdateReminder(c echo.Context) error {
 	}
 
 	r.Id = id
-	err = receiver.ReminderService.UpdateReminder(*r)
-	if err != nil {
-		return err
+	count := receiver.ReminderService.UpdateReminder(*r)
+	if count == 0 {
+		return errors.New("record not found")
 	}
 
 	return c.JSON(http.StatusOK, r)
@@ -85,9 +86,9 @@ func (receiver *ReminderController) DeleteReminder(c echo.Context) error {
 		return err
 	}
 
-	err = receiver.ReminderService.DeleteReminder(id)
-	if err != nil {
-		return err
+	count := receiver.ReminderService.DeleteReminder(id)
+	if count == 0 {
+		return errors.New("record not found")
 	}
 	return c.NoContent(http.StatusNoContent)
 }

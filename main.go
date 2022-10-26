@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 	"survivorcoders.com/reminders/Claims"
 	"survivorcoders.com/reminders/Services"
@@ -18,14 +18,19 @@ func main() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:8081"},
+	}))
 
 	//database testing
-	database, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
-
+	//database, err := gorm.Open(sqlite.Open("../db/test.db"), &gorm.Config{})
+	//if err != nil {
+	//	panic("failed to connect database")
+	//}
+	dsn := "sqlserver://localhost:1433?database=GoReminders"
+	database, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 	// Migrate the schema
+
 	err = database.AutoMigrate(&entity.Reminder{}, &entity.User{})
 	if err != nil {
 		return

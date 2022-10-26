@@ -25,21 +25,21 @@ func (u *UserManager) checkPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-func (u *UserManager) SignIn(username, password string) error {
+func (u *UserManager) SignIn(username, password string) (*entity.User, error) {
 	var user entity.User
 	e := "invalid username or password"
 
 	err := u.UserRepository.GetUserByUsername(username, &user)
 	if err != nil {
-		return errors.New(e)
+		return nil, errors.New(e)
 	}
 
 	//username found
 	if u.checkPasswordHash(password, user.Password) == false {
-		return errors.New(e)
+		return nil, errors.New(e)
 	}
 
-	return nil
+	return &user, nil
 }
 
 func (u *UserManager) SignUp(user *entity.User) error {

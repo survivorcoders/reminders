@@ -1,10 +1,10 @@
 package entity
 
-import "time"
+type Date string
 
 type Reminder struct {
-	Id          int       `json:"id"`
-	Name        string    `json:"name"`
-	RemindMeAt  time.Time `json:"remindMeAt"`
-	Description string    `json:"description"`
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	RemindMeAt  Date   `json:"remindMeAt"`
+	Description string `json:"description"`
 }

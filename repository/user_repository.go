@@ -13,35 +13,81 @@ func NewUserProviderRepository(database *gorm.DB) *UserProviderRepository {
 	return &UserProviderRepository{Database: database}
 }
 
-func (receiver *UserProviderRepository) CreateUser(reminder *entity.User) error {
-	result := receiver.Database.Create(reminder)
-	if result.Error != nil {
-		return result.Error
+func (receiver *UserProviderRepository) CreateUser(user *entity.User) error {
+	c := make(chan error)
+
+	go func(c chan error) {
+		err := receiver.Database.Create(user).Error
+		c <- err
+	}(c)
+
+	err := <-c
+
+	if err != nil {
+
+		return err
 	}
 	return nil
 }
 
-func (receiver *UserProviderRepository) GetUserById(id int, reminder *entity.User) error {
-	return receiver.Database.First(reminder, id).Error
+func (receiver *UserProviderRepository) GetUserById(id int, user *entity.User) error {
+	c := make(chan error)
 
+	go func(c chan error) {
+		err := receiver.Database.First(user, id).Error
+		c <- err
+	}(c)
+
+	err := <-c
+
+	return err
 }
 
-func (receiver *UserProviderRepository) GetUserByUsername(username string, reminder *entity.User) error {
-	result := receiver.Database.First(reminder, "username = ?", username)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+func (receiver *UserProviderRepository) GetUserByUsername(username string, user *entity.User) error {
+	c := make(chan error)
+
+	go func(c chan error) {
+		err := receiver.Database.First(user, "username = ?", username).Error
+		c <- err
+	}(c)
+
+	err := <-c
+
+	return err
 }
 
-func (receiver *UserProviderRepository) GetAllUsers(reminders []entity.User) error {
-	return receiver.Database.Find(&reminders).Error
+func (receiver *UserProviderRepository) GetAllUsers(users []entity.User) error {
+	c := make(chan error)
+
+	go func(c chan error) {
+		err := receiver.Database.Find(&users).Error
+		c <- err
+	}(c)
+	err := <-c
+
+	return err
 }
 
-func (receiver *UserProviderRepository) UpdateUser(r entity.User) error {
-	return receiver.Database.Model(&r).Updates(r).Error
+func (receiver *UserProviderRepository) UpdateUser(user entity.User) int64 {
+	c := make(chan int64)
+
+	go func(c chan int64) {
+		count := receiver.Database.Model(&user).Updates(user).RowsAffected
+		c <- count
+	}(c)
+	count := <-c
+
+	return count
 }
 
-func (receiver *UserProviderRepository) DeleteUser(id int) error {
-	return receiver.Database.Delete(&entity.User{}, id).Error
+func (receiver *UserProviderRepository) DeleteUser(id int) int64 {
+	c := make(chan int64)
+
+	go func(c chan int64) {
+		count := receiver.Database.Delete(&entity.User{}, id).RowsAffected
+		c <- count
+	}(c)
+	count := <-c
+
+	return count
 }
