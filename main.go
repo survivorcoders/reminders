@@ -3,8 +3,9 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"gorm.io/driver/sqlserver"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 	"survivorcoders.com/reminders/Claims"
 	"survivorcoders.com/reminders/Services"
 	"survivorcoders.com/reminders/controller"
@@ -27,10 +28,13 @@ func main() {
 	//if err != nil {
 	//	panic("failed to connect database")
 	//}
-	dsn := "sqlserver://localhost:1433?database=GoReminders"
-	database, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
-	// Migrate the schema
+	dsn := "host=localhost user=postgres password=P@ssw0rd dbname=GoReminders port=5432"
 
+	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	if err != nil {
+		log.Fatalln(err)
+	}
 	err = database.AutoMigrate(&entity.Reminder{}, &entity.User{})
 	if err != nil {
 		return
